@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+  <!-- APP js -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <!-- add d3 from web -->
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <style>
+  path {
+    stroke: steelblue;
+    stroke-width: 1;
+    fill: none;
+  }
+  .axis {
+    shape-rendering: crispEdges;
+  }
+ 
+  .x.axis line {
+    stroke: lightgrey;
+  }
+ 
+  .x.axis .minor {
+    stroke-opacity: .5;
+  }
+ 
+  .x.axis path {
+    display: none;
+  }
+ 
+  .y.axis line, .y.axis path {
+    fill: none;
+    stroke: #000;
+  }
+ 
+  </style>
+</head>
+<body>
+	<div style="height: 60px; width:100%; top:0; left:0; position: fixed;background: linear-gradient(#171819,#393c42); padding-left: 0px; padding-right: 0px; color: #ffffff">
+	</div>
+	
+
+  	<div id="graph" class="line" style="margin-top: 100px; margin-left: 100px; padding-left: 50px"></div>
+</body>
+<script>
+ 				
+					var data = {{ show | safe }}
+					var xdomain_array=[];
+					var ydomain_array=[];
+                	for(var j=0; j<data.length; j++){
+					xdomain_array[j]=(data[j].Year);
+					ydomain_array[j]=(data[j].Population);
+					}
+
+					var xmax_domain=Math.max(...xdomain_array);
+					var ymax_domain=Math.max(...ydomain_array);
+
+
+                    var margin = {top: 30, right: 20, bottom: 70, left: 100},
+                    width = 900 - margin.left - margin.right,
+                    height = 270 - margin.top - margin.bottom;
+ 
+ 
+                    //Create the Scale we will use for the Axis
+                    var axisScale = d3.scale.linear()
+                                             .domain([1960, xmax_domain])
+                                             .range([0, width]);
+ 
+ 
+                    var yaxisScale = d3.scale.linear()
+                    .domain([0,ymax_domain+100])
+                    .range([ height,0]);
+ 
+                    var xAxis = d3.svg.axis()
+                    .scale(axisScale)
+                    .orient("bottom");
+ 
+                    var yAxis = d3.svg.axis()
+                    .scale(yaxisScale)
+                    .orient("left");
+ 
+                    var svgContainer = d3.select("#graph").
+                    append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ 
+                    svgContainer.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis);
+ 
+                    svgContainer.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis);
+ 
+                    // create a line
+                    var line = d3.svg.line()
+                    .x(function(d,i) {
+                      console.log(d.Year);
+                      return axisScale(d.Year);
+                    })
+                    .y(function(d,i) {
+                      console.log(d.Population);
+                      return yaxisScale(d.Population);
+                    })
+  				
+                    svgContainer.append("svg:path").attr("class", "line").attr("d", line(data));
+ 
+                    console.log({{show.Year | safe}})
+</script>
+ 
+</body>
+</html>
